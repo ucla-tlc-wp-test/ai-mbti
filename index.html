@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What Kind of AI User Are You? — AI Personality Quiz</title>
+<style>
+  /* UCLA palette — accessible white-background theme, large fonts */
+  :root{
+    --bg:#ffffff;
+    --card:#ffffff;
+    --card2:#f3f7fb;          /* very light blue tint */
+    --line:#c4d3e0;           /* soft blue-grey border */
+    --line-strong:#2774AE;
+    --txt:#10202c;            /* near-black navy, high contrast on white */
+    --muted:#3f5666;          /* dark slate, AA contrast on white */
+    --blue:#2774AE;           /* UCLA Blue */
+    --blue-dark:#003B5C;      /* UCLA Darkest Blue */
+    --gold:#FFD100;           /* UCLA Gold */
+    --gold-dark:#C99700;      /* darker gold for text/contrast */
+    --warn:#9a4a00;           /* accessible warm brown for warnings on white */
+    --good:#1f6a3f;           /* accessible green */
+    --radius:18px;
+    --shadow:0 10px 28px -14px rgba(0,59,92,.45);
+    --ring:0 0 0 4px rgba(39,116,174,.30);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--txt);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:36px 20px 90px;
+    font-size:19px;                 /* larger base font */
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%;max-width:820px}
+
+  /* keyboard focus visibility for accessibility */
+  :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:8px}
+
+  /* gold top band */
+  .app:before{content:"";display:block;height:8px;border-radius:8px;background:var(--gold);margin-bottom:26px}
+
+  /* ---------- shared ---------- */
+  .kicker{
+    text-transform:uppercase;letter-spacing:.18em;font-size:16px;
+    color:var(--blue);font-weight:800;margin-bottom:16px
+  }
+  h1{font-size:clamp(38px,7vw,60px);line-height:1.06;font-weight:800;letter-spacing:-.01em;color:var(--blue-dark)}
+  .lead{color:var(--txt);font-size:21px;line-height:1.65;margin-top:18px}
+  .btn{
+    appearance:none;border:3px solid var(--blue);cursor:pointer;font-weight:800;font-size:20px;
+    color:#fff;padding:16px 30px;border-radius:12px;
+    background:var(--blue);
+    box-shadow:var(--shadow);
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);background:var(--blue-dark);border-color:var(--blue-dark)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{background:#fff;color:var(--blue);border:3px solid var(--blue);box-shadow:none}
+  .btn.ghost:hover{background:var(--card2);color:var(--blue-dark)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+  .screen{display:none;animation:fade .35s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ---------- intro ---------- */
+  .hero{
+    background:#fff;
+    border:2px solid var(--line);border-top:8px solid var(--blue);border-radius:var(--radius);
+    padding:48px 44px;box-shadow:var(--shadow);
+  }
+  .axes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:32px 0}
+  .axis{
+    background:var(--card2);border:2px solid var(--line);border-left:6px solid var(--gold);border-radius:12px;padding:16px 18px;
+  }
+  .axis b{display:block;font-size:18px;color:var(--blue-dark);letter-spacing:.01em;margin-bottom:5px}
+  .axis span{font-size:17px;color:var(--muted)}
+  .start-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:8px}
+  .meta{color:var(--muted);font-size:17px;font-weight:600}
+
+  /* ---------- quiz ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+  .section-tag{font-size:18px;font-weight:800;color:var(--blue);letter-spacing:.01em}
+  .count{font-size:18px;color:var(--muted);font-weight:700}
+  .progress{height:14px;background:var(--card2);border-radius:99px;overflow:hidden;border:2px solid var(--line)}
+  .bar{height:100%;width:0;background:var(--blue);transition:width .35s ease}
+  .qcard{
+    background:#fff;
+    border:2px solid var(--line);border-radius:var(--radius);
+    padding:38px 36px;margin-top:24px;box-shadow:var(--shadow);
+  }
+  .qnum{font-size:17px;color:var(--gold-dark);letter-spacing:.02em;margin-bottom:12px;font-weight:800;text-transform:uppercase}
+  .qtext{font-size:28px;font-weight:800;line-height:1.3;color:var(--blue-dark)}
+  .opts{display:flex;flex-direction:column;gap:16px;margin-top:28px}
+  .opt{
+    text-align:left;cursor:pointer;border:2.5px solid var(--line);background:#fff;
+    color:var(--txt);padding:20px 22px;border-radius:14px;font-size:20px;line-height:1.5;
+    display:flex;gap:16px;align-items:flex-start;transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--blue);background:var(--card2);transform:translateY(-1px)}
+  .opt .pick{
+    flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:3px solid var(--line);
+    display:grid;place-items:center;font-weight:800;font-size:18px;color:var(--muted);background:#fff
+  }
+  .opt.sel{border-color:var(--blue);background:#eaf3fb}
+  .opt.sel .pick{border-color:var(--blue);background:var(--blue);color:#fff}
+  .nav{display:flex;justify-content:space-between;margin-top:26px;gap:14px}
+
+  /* ---------- results ---------- */
+  .result-hero{
+    background:#fff;
+    border:2px solid var(--line);border-top:10px solid var(--gold);border-radius:var(--radius);
+    padding:46px 38px;box-shadow:var(--shadow);text-align:center;position:relative;overflow:hidden
+  }
+  .code{
+    display:inline-flex;gap:10px;margin-bottom:20px;position:relative
+  }
+  .code span{
+    width:62px;height:74px;border-radius:12px;display:grid;place-items:center;
+    font-size:34px;font-weight:800;background:var(--blue);border:3px solid var(--blue-dark);
+    color:#fff
+  }
+  .tname{font-size:clamp(34px,6.5vw,50px);font-weight:800;letter-spacing:-.01em;position:relative;color:var(--blue-dark)}
+  .tdesc{color:var(--txt);font-size:21px;line-height:1.7;margin:18px auto 0;max-width:620px;position:relative}
+  .dims{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px;position:relative}
+  .chip{font-size:17px;font-weight:700;color:var(--blue-dark);background:var(--card2);border:2px solid var(--line);padding:9px 16px;border-radius:99px}
+  .chip b{color:var(--blue)}
+
+  .panel{
+    background:#fff;border:2px solid var(--line);border-radius:var(--radius);
+    padding:30px 30px;margin-top:20px;box-shadow:var(--shadow)
+  }
+  .panel.good{border-left:8px solid var(--good)}
+  .panel.warn{border-left:8px solid var(--gold);}
+  .panel h3{font-size:19px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .panel.good h3{color:var(--good)}
+  .panel.warn h3{color:var(--warn)}
+  .panel ul{list-style:none;display:flex;flex-direction:column;gap:16px}
+  .panel li{display:flex;gap:14px;line-height:1.6;font-size:20px;color:var(--txt)}
+  .dot{flex:0 0 auto;width:12px;height:12px;border-radius:50%;margin-top:9px}
+  .good .dot{background:var(--good)}
+  .warn .dot{background:var(--gold-dark)}
+
+  .actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;justify-content:center}
+
+  /* grid of all types */
+  .alltypes{margin-top:52px}
+  .alltypes h2{font-size:30px;font-weight:800;text-align:center;margin-bottom:8px;color:var(--blue-dark)}
+  .alltypes p{text-align:center;color:var(--muted);font-size:18px;margin-bottom:24px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px}
+  .tile{
+    background:#fff;border:2px solid var(--line);border-radius:14px;padding:18px 18px;
+    transition:all .15s ease;cursor:default
+  }
+  .tile:hover{border-color:var(--blue);transform:translateY(-2px)}
+  .tile .tcode{font-size:16px;font-weight:800;letter-spacing:.08em;color:var(--blue)}
+  .tile .tt{font-size:20px;font-weight:800;margin:6px 0 8px;color:var(--blue-dark)}
+  .tile .ts{font-size:16px;color:var(--muted);line-height:1.5}
+  .tile.me{border-color:var(--gold-dark);border-width:3px;background:#fffbe6}
+  .tile.me .tcode{color:var(--gold-dark)}
+
+  footer{text-align:center;color:var(--muted);font-size:16px;margin-top:44px;line-height:1.6}
+  @media (max-width:560px){
+    body{font-size:18px}
+    .hero,.qcard{padding:32px 24px}
+    .axes{grid-template-columns:1fr}
+    .qtext{font-size:24px}
+    .opt{font-size:19px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- INTRO -->
+  <section class="screen active" id="intro">
+    <div class="hero">
+      <div class="kicker">AI Symposium • Personality Assessment</div>
+      <h1>What Kind of<br/>AI User Are You?</h1>
+      <p class="lead">A personality assessment for the AI age. Twenty quick questions reveal your 4‑letter AI type — one of 16 distinct profiles, from <em>The Visionary</em> to <em>The Craftsperson</em>. Go with your first instinct. There are no right or wrong answers.</p>
+
+      <div class="axes">
+        <div class="axis"><b>Autopilot ↔ Copilot</b><span>How you work with AI</span></div>
+        <div class="axis"><b>Believer ↔ Skeptic</b><span>How much you trust it</span></div>
+        <div class="axis"><b>Open ↔ Stealth</b><span>How openly you use it</span></div>
+        <div class="axis"><b>Spark ↔ Polish</b><span>When in your flow you reach for it</span></div>
+      </div>
+
+      <div class="start-row">
+        <button class="btn" onclick="start()">Start the quiz →</button>
+        <span class="meta">20 questions • about 3 minutes</span>
+      </div>
+    </div>
+    <footer>Based on the “AI Personality Type Quiz.” Your answers stay in your browser — nothing is sent anywhere.</footer>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="quiz">
+    <div class="topbar">
+      <span class="section-tag" id="sectionTag"></span>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+
+    <div class="qcard">
+      <div class="qnum" id="qnum"></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn ghost" id="backBtn" onclick="back()">← Back</button>
+      <button class="btn" id="nextBtn" onclick="next()" disabled>Next →</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="results">
+    <div class="result-hero">
+      <div class="code" id="codeBox"></div>
+      <div class="kicker" style="position:relative">Your AI Type</div>
+      <div class="tname" id="tname"></div>
+      <div class="tdesc" id="tdesc"></div>
+      <div class="dims" id="dims"></div>
+    </div>
+
+    <div class="panel good">
+      <h3>✦ How to use AI effectively</h3>
+      <ul id="effective"></ul>
+    </div>
+    <div class="panel warn">
+      <h3>⚠ What to be mindful of</h3>
+      <ul id="mindful"></ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="restart()">↺ Retake the quiz</button>
+      <button class="btn ghost" onclick="scrollToGrid()">See all 16 types</button>
+    </div>
+
+    <div class="alltypes" id="gridSection">
+      <h2>The 16 AI Types</h2>
+      <p>Your type is highlighted. Hover any tile to read it.</p>
+      <div class="grid" id="grid"></div>
+    </div>
+    <footer>Curious about a friend? Share this page and compare types.</footer>
+  </section>
+
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const SECTIONS = [
+  {tag:"Section 1 of 4 — How do you work with AI?", axis:[ "A","C" ]}, // Autopilot / Copilot
+  {tag:"Section 2 of 4 — How much do you trust AI?", axis:[ "B","S" ]}, // Believer / Skeptic
+  {tag:"Section 3 of 4 — How open are you about AI?", axis:[ "R","T" ]}, // Open / Stealth
+  {tag:"Section 4 of 4 — When do you use AI?", axis:[ "K","P" ]}  // Spark / Polish
+];
+
+const QUESTIONS = [
+  // section 0
+  {q:"You need to write a first draft of something. You:",
+   a:"Ask AI to write it, then edit what you get",
+   b:"Write a rough version yourself, then ask AI to improve it"},
+  {q:"Your typical AI session looks like:",
+   a:"One or two prompts — use what it gives you",
+   b:"A back-and-forth conversation with multiple follow-ups"},
+  {q:"When AI gives you something 80% right, you:",
+   a:"Use it — good enough, you'll polish the rest",
+   b:"Keep prompting until it's much closer to what you wanted"},
+  {q:"You think of a prompt as:",
+   a:"An instruction — tell it what you want and it delivers",
+   b:"The start of a dialogue — you expect to refine from there"},
+  {q:"After a long AI session, you feel like:",
+   a:"AI did the heavy lifting and you shaped the final result",
+   b:"You and AI built something together, step by step"},
+  // section 1
+  {q:"AI gives you a statistic you've never heard. You:",
+   a:"Include it — sounds plausible and fits",
+   b:"Look it up before using it"},
+  {q:"You've caught AI making something up:",
+   a:"Rarely or never — I mostly trust what it tells me",
+   b:"Multiple times — I always verify now"},
+  {q:"When AI answers confidently and in detail:",
+   a:"That confidence reassures me",
+   b:"That confidence makes me more careful"},
+  {q:"Your general rule for AI-generated content:",
+   a:"Reliable enough for most things I use it for",
+   b:"Useful, but always needs a human fact-check"},
+  {q:"A colleague asks if they should trust an AI-generated report:",
+   a:"“Probably fine — just skim for obvious errors”",
+   b:"“Read carefully and verify anything that matters”"},
+  // section 2
+  {q:"A colleague compliments work that AI helped you with. You:",
+   a:"Mention that AI played a role",
+   b:"Say thank you and move on"},
+  {q:"Your philosophy on AI disclosure:",
+   a:"People should know when AI was meaningfully involved",
+   b:"It's a tool like spell-check — not worth mentioning"},
+  {q:"When submitting work that used AI, you:",
+   a:"Note it somewhere in the submission",
+   b:"Don't mention it — the quality is what matters"},
+  {q:"You discover a genuinely useful new AI technique. You:",
+   a:"Share it with your team right away",
+   b:"Keep using it quietly — it's your edge"},
+  {q:"If AI use became required to disclose professionally, you'd feel:",
+   a:"Relieved — I already do this or think everyone should",
+   b:"Annoyed — it would create unnecessary friction"},
+  // section 3
+  {q:"You're most likely to open an AI tool when:",
+   a:"You're staring at a blank page",
+   b:"You have a draft and need to improve it"},
+  {q:"AI is most valuable to you for:",
+   a:"Generating ideas, outlines, or first drafts",
+   b:"Editing, tightening, and refining"},
+  {q:"Given a complex project, you'd use AI first to:",
+   a:"Brainstorm approaches and possibilities",
+   b:"Clean up your notes into something presentable"},
+  {q:"The blank-page feeling:",
+   a:"AI is my solution — it gets things started",
+   b:"I can start fine — I use AI once I have something"},
+  {q:"You'd describe AI primarily as a:",
+   a:"Creative igniter — sparks ideas and momentum",
+   b:"Quality filter — sharpens what you already have"}
+];
+
+const LETTER_LABELS = {
+  A:"Autopilot", C:"Copilot",
+  B:"Believer",  S:"Skeptic",
+  R:"Open",      T:"Stealth",
+  K:"Spark",     P:"Polish"
+};
+
+const TYPES = {
+  ABRK:{name:"The Visionary",desc:"You use AI to ignite ideas — blank pages don't scare you because AI fills them fast. You trust what comes back and love sharing what you've built. You're often the person who introduces colleagues to tools they didn't know existed.",
+    eff:["Use AI to generate 3–5 options on any topic and pick the best one.","Share your prompt libraries — your experimentation benefits everyone.","Batch your AI sessions: generate many ideas at once, curate later."],
+    mind:["Fast + trusting + sharing = high risk of spreading hallucinations. Always do a quick sanity check before you hit send.","Broadcasting unverified AI output can quietly erode your credibility. One viral mistake lingers.","Make sure the ideas you're excited to share are actually yours to share — attribution matters."]},
+  ABRP:{name:"The Evangelist",desc:"You bring things to near-completion yourself, then hand them to AI to make them shine. You trust the refinement, and you're open about using AI to elevate your work. People around you know AI is part of your toolkit — and you think it should be part of theirs.",
+    eff:["Use AI for final editing passes: tone, flow, concision, and consistency.","Ask AI to ‘punch up the ending’ or ‘make this more direct’ — specific instructions produce better polish.","Share polished before/after examples with your team as practical training."],
+    mind:["AI polishing can sand away your voice. Read the output aloud — if it doesn't sound like you, it's gone too far.","Evangelism without skepticism can normalize over-reliance. Balance enthusiasm with honest caveats.","Not everyone processes disclosure the same way — some colleagues may feel unsettled when you credit AI. Read the room."]},
+  ABTK:{name:"The Ghost",desc:"AI starts everything for you, you trust what it gives, and you keep the whole process private. Highly efficient, quietly productive — and somewhat mysterious to people who wonder how you produce so much so fast.",
+    eff:["Build a library of your best prompts for recurring tasks — your prompt bank is your superpower.","Use AI to generate multiple opening options, then choose the one that sounds most like you.","Batch ideation: generate everything you need in one session, then work from that material."],
+    mind:["The ghost approach can drift toward over-reliance. If AI stopped working tomorrow, how much of your output would slow down? Maintain your own thinking.","Working privately means no one can catch your blind spots. Consider stress-testing your AI-assisted work with a trusted colleague occasionally.","Quiet efficiency is valuable, but invisible process creates invisible accountability."]},
+  ABTP:{name:"The Finisher",desc:"You create the raw material, hand it to AI to clean up, trust the result, and move on — quietly. You see AI as a finishing tool, not a thinking tool. Polished outputs, private process, consistent delivery.",
+    eff:["Give AI precise instructions: ‘Remove filler words,’ ‘tighten this to 150 words,’ ‘make the tone more confident.’","Use AI to catch inconsistencies in your own work — different terminology, tone shifts, repeated phrases.","Create a personal style guide to feed AI so its polish sounds like you."],
+    mind:["Over-reliance on AI polish can make your drafts lazier over time. If you know AI will fix it, you may stop self-editing. Keep your drafting sharp.","AI polishing sometimes removes nuance alongside errors. Read the cleaned version carefully before submitting.","Private efficiency is fine, but if you're in a role where your writing process is visible to others, invisibility can raise questions."]},
+  ASRK:{name:"The Watchdog",desc:"You use AI to brainstorm and generate ideas, but you fact-check everything — and you make sure the people around you do too. You're the AI safety voice in your team: enthusiastic enough to use it, skeptical enough to audit it.",
+    eff:["Use AI for rapid ideation, then run every key claim through a verification step before acting on it.","Build and share a team fact-checking checklist for AI-generated content.","Document the hallucinations you catch — patterns emerge and help your team calibrate."],
+    mind:["Your skepticism is a strength, but constant warnings can make colleagues tune you out. Balance caution with encouragement.","Not everything needs the same verification intensity. Calibrate your scrutiny to the stakes — a casual email is not a published report.","Broadcasting concerns without proposing solutions can make AI feel more threatening than it is to newer users."]},
+  ASRP:{name:"The Editor at Large",desc:"You delegate the finishing work to AI — polishing, reformatting, tightening — but you verify every change before it goes out, and you share what you learn about where AI gets things wrong. The most safety-conscious version of the transparent AI user.",
+    eff:["After every AI polish pass, run a diff: what changed? Look specifically for facts or claims AI introduced.","Create a shared log of AI editing errors for your team — recurring mistake patterns are genuinely useful.","Use AI to flag passive voice, jargon, and structural problems, then decide yourself which fixes to keep."],
+    mind:["Verification takes time. If you're the team's designated AI checker, you may create bottlenecks. Help others develop their own verification habits.","Not every AI edit needs to be broadcast. Choose what to share based on what's actionable, not just interesting.","The Editor at Large can become the Editor Who Never Ships. Know when good enough is good enough."]},
+  ASTK:{name:"The Shadow Strategist",desc:"AI generates your ideas and strategies, you audit everything carefully, and nobody knows. Quietly formidable. The kind of person who walks into a meeting with better-researched positions than anyone else, and doesn't explain how.",
+    eff:["Use AI to generate competing strategic options, then pressure-test each one against your own knowledge.","Build a personal verification workflow for facts that matter: claim → source → confidence level.","Use AI to steelman positions you disagree with — it makes your own arguments stronger."],
+    mind:["Working in stealth means no one can learn from your process or catch your blind spots. Consider occasionally sharing your verification methods.","AI-generated strategy can feel like your own thinking when you've audited it carefully. Stay clear about what originated where.","Private auditing is rigorous but lonely. A trusted second opinion sometimes catches what careful solo review misses."]},
+  ASTP:{name:"The Shadow Analyst",desc:"AI refines and polishes your work, you verify every change quietly, and no one knows. Maximum control over quality, minimum visibility into process. High standards enforced invisibly.",
+    eff:["After each AI pass, make at least one deliberate human edit to maintain ownership of the final product.","Cross-check any new facts or claims AI introduces during polishing — it occasionally adds things during rewrites.","Develop a personal checklist for what AI is and isn't allowed to change in your work."],
+    mind:["The combination of delegating polish and verifying privately means your workflow is invisible to collaborators. If you ever need to hand off work, your process may be hard to explain.","Invisible high standards can frustrate colleagues who don't understand why their work gets revised without explanation.","Silent quality control is valuable, but it's not the same as transparent quality culture."]},
+  CBRK:{name:"The Collaborator",desc:"AI is your creative partner from the first word. You iterate together, trust the direction, and invite others into the process. Genuinely enthusiastic about what human+AI can make — and genuinely good at bringing others along.",
+    eff:["Use extended conversations with AI to develop ideas — build on its suggestions, push back, redirect.","Share your prompts and AI sessions openly. Your collaborative approach is one of the most useful things you can model.","Use AI to explore creative territory you'd hesitate to try alone. It's a low-stakes creative gym."],
+    mind:["Deep collaboration makes it hard to separate your ideas from AI's. Before sharing, ask: what is distinctly yours in this?","Open enthusiasm is contagious, but it can set unrealistic expectations for colleagues who are less fluent with AI tools.","Trust without verification in a collaborative creative process can mean errors get polished in rather than out."]},
+  CBRP:{name:"The Co-Author",desc:"You draft, AI refines, you iterate, AI refines again — a true back-and-forth toward the best possible output, openly practiced. You model what professional AI collaboration can look like and are usually several steps ahead of your peers.",
+    eff:["Treat AI like a writing partner. Give feedback on its edits: ‘that's too formal,’ ‘bring back my original third paragraph.’","Share your iterative process — the sequence of drafts, not just the final output — as a model for others.","Use AI to argue the other side of your own work. It makes your thinking sharper."],
+    mind:["Iterating toward perfection with a willing AI partner can become endless. Set a revision limit and honor it.","The co-author dynamic can make attribution murky in professional or academic contexts. Know your institution's policies.","When you share your process openly, not everyone will respond positively — some contexts treat AI use as a red flag, fairly or not."]},
+  CBTK:{name:"The Tinkerer",desc:"You're deep in the AI lab — always experimenting with prompts, exploring unexpected creative possibilities, trusting the process, and keeping all of it private. Quietly innovative. Often the first to find a genuinely novel use case that everyone else adopts six months later.",
+    eff:["Keep a prompt journal. Your best discoveries come from documenting what worked and why.","Push AI into uncomfortable creative territory — constraints, strange personas, contradictions. The unexpected outputs are often the most valuable.","Use AI to challenge your own assumptions: ‘argue against my approach’ or ‘what am I missing?’"],
+    mind:["Tinkering in isolation means your discoveries don't spread — and don't get challenged. Other people's reactions sharpen what you build.","Deep private experimentation can develop attachment to AI-generated ideas that feel like your own. Stay curious about the origin of your thinking.","Creative exploration without output can become avoidance. At some point, the experiment has to become something."]},
+  CBTP:{name:"The Perfectionist",desc:"Every output goes through multiple AI refinement passes until it's exactly right. You trust the collaborative process and keep it private. Exceptionally high output quality that often makes colleagues wonder how you do it.",
+    eff:["Set a revision limit (three passes maximum) to avoid the infinite loop of AI-assisted perfectionism.","Use AI to flag things you've stopped seeing: inconsistencies, repeated words, tonal drift.","Ask AI: ‘What's the weakest part of this?’ It surfaces problems before your reader does."],
+    mind:["Perfectionism plus AI can be paralyzing. The pursuit of the perfect output delays shipping — and sometimes irrelevance arrives before perfection does.","Private perfectionism can make you a bottleneck on collaborative work where others need your output to move forward.","High output quality sets expectations. If you can't maintain that quality at scale, it creates pressure. Know your sustainable pace."]},
+  CSRK:{name:"The Researcher",desc:"Rigorous, iterative, transparent. You use AI to explore ideas, verify everything it gives you, and share your process openly. Probably the most epistemically responsible AI user in any room — and one of the most credible.",
+    eff:["Document your prompts and AI responses alongside your verification steps. This creates a reproducible workflow others can use.","Publish your AI research process — it's genuinely useful and positions you as a thoughtful expert.","Use AI to generate hypotheses you can then test, rather than conclusions you accept."],
+    mind:["Your rigor is admirable but can slow you down significantly. Not everything needs the full research treatment. Calibrate your verification effort to the stakes.","Transparent process can expose your workflow to people who will misuse or misattribute your methods.","The researcher's instinct to verify everything can, ironically, create its own form of paralysis — the work only ships when it's certain, and certainty is rare."]},
+  CSRP:{name:"The Editor-in-Chief",desc:"You iterate carefully on refinement, verify every change, and share what you learn. Quality-obsessed, transparent, methodical. The person colleagues want reviewing their work before it goes out — because you will actually make it better.",
+    eff:["Maintain a personal checklist of things to verify after every AI editing pass: facts, attributions, tone shifts, introduced claims.","Share your editing standards with your team — not as rules, but as principles others can adapt.","Use AI to generate multiple edits of the same passage and choose the best, rather than accepting the first."],
+    mind:["You may hold others to your standard without realizing how high it is. Be patient with colleagues at earlier stages.","Not every document is a publication. Applying editorial rigor to a meeting agenda wastes everyone's time.","Being the designated quality check can become a role you didn't ask for. Boundaries matter."]},
+  CSTK:{name:"The Inventor",desc:"Deep iterative brainstorming with AI, skeptical of every output, completely private. You build ideas from the ground up and verify as you go. Slow, methodical, and genuinely original — the rarest combination in an era of fast AI adoption.",
+    eff:["Use AI to generate hypotheses you can then challenge. The best inventions come from productive disagreement with your own tool.","Keep a running log of what AI gets wrong in your domain — patterns emerge and calibrate your trust precisely.","Use AI to explore adjacent fields and find analogies — cross-domain connections are where original ideas live."],
+    mind:["Inventing privately means no external feedback loop. Your ideas may be brilliant — or may have a blind spot that would be obvious to someone else.","Skepticism is your strength, but extended private skepticism can tip into dismissiveness. Stay genuinely open to AI surprises.","The invention that never ships is just a thought experiment. Find a way to test your ideas in the world, even small."]},
+  CSTP:{name:"The Craftsperson",desc:"Meticulous iterative refinement, everything verified, low noise. The work is the point. You use AI as a precision instrument — specific inputs, specific outputs — and your standards are visibly higher than average, even if nobody knows how you get there.",
+    eff:["Give AI extremely specific instructions: not ‘improve this’ but ‘reduce passive voice in paragraph two.’","After each AI pass, make one deliberate human edit — it keeps your voice present and your judgment sharp.","Use AI to check your own consistency: terminology, formatting, tone across a long document."],
+    mind:["The craftsperson's risk is isolation. Without sharing your process or output, you lose the feedback that makes craft better.","Precision and control can make collaboration feel uncomfortable. Other people's messiness is not inefficiency — it's how they think.","Craft for its own sake is admirable, but craft in service of nothing gets delivered to no one. Know who the work is for."]}
+};
+
+const GRID_ORDER = ["ABRK","ABRP","ABTK","ABTP","ASRK","ASRP","ASTK","ASTP","CBRK","CBRP","CBTK","CBTP","CSRK","CSRP","CSTK","CSTP"];
+
+/* ---------------- STATE ---------------- */
+let current = 0;
+const answers = new Array(QUESTIONS.length).fill(null); // 'a' or 'b'
+
+/* ---------------- FLOW ---------------- */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function start(){ current=0; render(); show('quiz'); }
+
+function render(){
+  const sec = Math.floor(current/5);
+  document.getElementById('sectionTag').textContent = SECTIONS[sec].tag;
+  document.getElementById('count').textContent = `${current+1} / ${QUESTIONS.length}`;
+  document.getElementById('bar').style.width = `${(current/QUESTIONS.length)*100}%`;
+  document.getElementById('qnum').textContent = `Question ${current+1}`;
+  document.getElementById('qtext').textContent = QUESTIONS[current].q;
+
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  [['a',QUESTIONS[current].a],['b',QUESTIONS[current].b]].forEach(([key,label])=>{
+    const el = document.createElement('button');
+    el.className = 'opt' + (answers[current]===key?' sel':'');
+    el.innerHTML = `<span class="pick">${key.toUpperCase()}</span><span>${label}</span>`;
+    el.onclick = ()=>{ answers[current]=key; render(); };
+    opts.appendChild(el);
+  });
+
+  document.getElementById('backBtn').style.visibility = current===0 ? 'hidden':'visible';
+  document.getElementById('nextBtn').disabled = answers[current]===null;
+  document.getElementById('nextBtn').textContent = current===QUESTIONS.length-1 ? 'See my result →' : 'Next →';
+}
+
+function next(){
+  if(answers[current]===null) return;
+  if(current===QUESTIONS.length-1){ finish(); return; }
+  current++; render();
+}
+function back(){ if(current>0){ current--; render(); } }
+
+function computeCode(){
+  let code='';
+  for(let s=0;s<4;s++){
+    let aCount=0;
+    for(let i=s*5;i<s*5+5;i++) if(answers[i]==='a') aCount++;
+    const [letterA,letterB] = SECTIONS[s].axis;
+    code += aCount>=3 ? letterA : letterB;
+  }
+  return code;
+}
+
+function finish(){
+  const code = computeCode();
+  const t = TYPES[code];
+  document.getElementById('bar').style.width='100%';
+
+  // code box
+  const cb = document.getElementById('codeBox'); cb.innerHTML='';
+  code.split('').forEach(l=>{ const s=document.createElement('span'); s.textContent=l; cb.appendChild(s); });
+
+  document.getElementById('tname').textContent = t.name;
+  document.getElementById('tdesc').textContent = t.desc;
+
+  const dims = document.getElementById('dims'); dims.innerHTML='';
+  code.split('').forEach(l=>{
+    const c=document.createElement('span'); c.className='chip';
+    c.innerHTML = `<b>${l}</b> · ${LETTER_LABELS[l]}`; dims.appendChild(c);
+  });
+
+  fillList('effective', t.eff);
+  fillList('mindful', t.mind);
+  buildGrid(code);
+  show('results');
+}
+
+function fillList(id, items){
+  const ul=document.getElementById(id); ul.innerHTML='';
+  items.forEach(txt=>{
+    const li=document.createElement('li');
+    li.innerHTML = `<span class="dot"></span><span>${txt}</span>`;
+    ul.appendChild(li);
+  });
+}
+
+function buildGrid(myCode){
+  const g=document.getElementById('grid'); g.innerHTML='';
+  GRID_ORDER.forEach(code=>{
+    const t=TYPES[code];
+    const tile=document.createElement('div');
+    tile.className='tile'+(code===myCode?' me':'');
+    tile.innerHTML = `<div class="tcode">${code}</div><div class="tt">${t.name}</div>`+
+                     `<div class="ts">${t.desc.split('.')[0]}.</div>`;
+    g.appendChild(tile);
+  });
+}
+
+function restart(){ answers.fill(null); current=0; render(); show('intro'); }
+function scrollToGrid(){ document.getElementById('gridSection').scrollIntoView({behavior:'smooth'}); }
+
+/* keyboard: A/B to answer, arrows to navigate */
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('quiz').classList.contains('active')) return;
+  if(e.key==='a'||e.key==='A'){ answers[current]='a'; render(); }
+  if(e.key==='b'||e.key==='B'){ answers[current]='b'; render(); }
+  if(e.key==='ArrowRight'||e.key==='Enter'){ next(); }
+  if(e.key==='ArrowLeft'){ back(); }
+});
+</script>
+</body>
+</html>
