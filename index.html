@@ -188,30 +188,11 @@
     --blue-lightest:#DAEBFE;
     --gold-darker:#FFC72C;
   }
-  /* bright decorative background wash (kept light per brand guidance) */
-  body{position:relative;isolation:isolate;background:#fbfdff}
-  body::before{
-    content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
-    background:
-      radial-gradient(680px 480px at 12% -6%, rgba(139,184,232,.40), transparent 60%),
-      radial-gradient(640px 520px at 100% 0%, rgba(218,235,254,.75), transparent 55%),
-      radial-gradient(720px 600px at 88% 108%, rgba(39,116,174,.12), transparent 60%),
-      radial-gradient(520px 420px at 0% 100%, rgba(255,209,0,.12), transparent 60%);
-  }
-  body::after{
-    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
-    background-image:radial-gradient(rgba(39,116,174,.10) 1.4px, transparent 1.6px);
-    background-size:30px 30px;
-    -webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);
-            mask-image:linear-gradient(180deg,#000,transparent 75%);
-  }
+  /* clean white background — no decorative washes */
+  body{background:#ffffff}
 
-  /* brand gradient top band */
-  .app:before{
-    height:10px;border-radius:99px;
-    background:linear-gradient(90deg,var(--blue-darker),var(--blue) 45%,var(--blue-light) 75%,var(--gold));
-    box-shadow:0 6px 18px -8px rgba(0,59,92,.5);
-  }
+  /* no decorative line/band on top */
+  .app:before{display:none}
 
   /* logo brand bar */
   .brandbar{display:flex;align-items:center;gap:12px;margin-bottom:26px;padding-bottom:18px;border-bottom:2px solid var(--line)}
@@ -219,24 +200,21 @@
   .brand-team{font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
   .brand-team:before{content:"";display:inline-block;width:1px;height:18px;background:var(--line);vertical-align:-4px;margin-right:12px}
 
-  /* glassy elevated cards */
-  .hero,.qcard,.result-hero,.panel{
-    background:linear-gradient(180deg,#ffffff,#fbfdff);
-    backdrop-filter:saturate(1.05);
-  }
-  .hero{border-top:10px solid transparent;border-image:linear-gradient(90deg,var(--blue-darker),var(--blue),var(--gold)) 1;position:relative;overflow:hidden}
-  .hero::after{content:"";position:absolute;width:240px;height:240px;right:-70px;top:-70px;border-radius:50%;
-    background:radial-gradient(circle at 30% 30%,rgba(255,209,0,.28),rgba(255,209,0,0) 70%);pointer-events:none}
+  /* clean white cards */
+  .hero,.qcard,.result-hero,.panel{background:#ffffff}
+  .hero{border-top:8px solid var(--blue)}
 
   /* gradient buttons */
   .btn{background:linear-gradient(135deg,var(--blue),var(--blue-darker));border-color:var(--blue-darker)}
   .btn:hover{background:linear-gradient(135deg,var(--blue-darker),var(--blue-dark))}
 
-  /* fancier axis cards on intro */
-  .axis{position:relative;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease}
-  .axis:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(0,59,92,.5)}
-  .axis::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
-    background:linear-gradient(90deg,var(--blue),var(--gold))}
+  /* axis cards: one solid colour per box, plain white background */
+  .axis{background:#ffffff;border:2px solid var(--line);transition:transform .15s ease,box-shadow .15s ease}
+  .axis:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(0,59,92,.35)}
+  .axes .axis:nth-child(1){border-left:6px solid var(--blue)}
+  .axes .axis:nth-child(2){border-left:6px solid var(--blue-darker)}
+  .axes .axis:nth-child(3){border-left:6px solid var(--gold-darker)}
+  .axes .axis:nth-child(4){border-left:6px solid var(--blue-light)}
 
   /* gradient progress */
   .bar{background:linear-gradient(90deg,var(--blue-darker),var(--blue) 55%,var(--blue-light))}
@@ -249,7 +227,7 @@
   }
   .code span::after{content:"";position:absolute;inset:0;
     background:linear-gradient(135deg,rgba(255,255,255,.45),rgba(255,255,255,0) 45%)}
-  .result-hero{border-top:10px solid transparent;border-image:linear-gradient(90deg,var(--gold),var(--blue),var(--blue-darker)) 1}
+  .result-hero{border-top:8px solid var(--blue)}
 
   /* ---------- axis spectrum graphic (results) ---------- */
   .spectrum{display:flex;flex-direction:column;gap:16px;margin:30px auto 0;max-width:560px;text-align:left;position:relative}
