@@ -175,6 +175,125 @@
     .qtext{font-size:24px}
     .opt{font-size:19px}
   }
+
+  /* ════════════════════════════════════════════
+     FANCY UCLA-BRAND LAYER (official palette)
+     Blue #2774AE · Darkest #003B5C · Darker #005587
+     Lighter #8BB8E8 · Lightest #DAEBFE · Gold #FFD100
+     Rule: bright/white layout, blue-dominant, gold accent.
+  ════════════════════════════════════════════ */
+  :root{
+    --blue-darker:#005587;
+    --blue-light:#8BB8E8;
+    --blue-lightest:#DAEBFE;
+    --gold-darker:#FFC72C;
+  }
+  /* bright decorative background wash (kept light per brand guidance) */
+  body{position:relative;isolation:isolate;background:#fbfdff}
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(680px 480px at 12% -6%, rgba(139,184,232,.40), transparent 60%),
+      radial-gradient(640px 520px at 100% 0%, rgba(218,235,254,.75), transparent 55%),
+      radial-gradient(720px 600px at 88% 108%, rgba(39,116,174,.12), transparent 60%),
+      radial-gradient(520px 420px at 0% 100%, rgba(255,209,0,.12), transparent 60%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(rgba(39,116,174,.10) 1.4px, transparent 1.6px);
+    background-size:30px 30px;
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);
+            mask-image:linear-gradient(180deg,#000,transparent 75%);
+  }
+
+  /* brand gradient top band */
+  .app:before{
+    height:10px;border-radius:99px;
+    background:linear-gradient(90deg,var(--blue-darker),var(--blue) 45%,var(--blue-light) 75%,var(--gold));
+    box-shadow:0 6px 18px -8px rgba(0,59,92,.5);
+  }
+
+  /* logo brand bar */
+  .brandbar{display:flex;align-items:center;gap:12px;margin-bottom:26px;padding-bottom:18px;border-bottom:2px solid var(--line)}
+  .brand-logo{height:40px;width:auto;object-fit:contain}
+  .brand-team{font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+  .brand-team:before{content:"";display:inline-block;width:1px;height:18px;background:var(--line);vertical-align:-4px;margin-right:12px}
+
+  /* glassy elevated cards */
+  .hero,.qcard,.result-hero,.panel{
+    background:linear-gradient(180deg,#ffffff,#fbfdff);
+    backdrop-filter:saturate(1.05);
+  }
+  .hero{border-top:10px solid transparent;border-image:linear-gradient(90deg,var(--blue-darker),var(--blue),var(--gold)) 1;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;width:240px;height:240px;right:-70px;top:-70px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,rgba(255,209,0,.28),rgba(255,209,0,0) 70%);pointer-events:none}
+
+  /* gradient buttons */
+  .btn{background:linear-gradient(135deg,var(--blue),var(--blue-darker));border-color:var(--blue-darker)}
+  .btn:hover{background:linear-gradient(135deg,var(--blue-darker),var(--blue-dark))}
+
+  /* fancier axis cards on intro */
+  .axis{position:relative;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease}
+  .axis:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(0,59,92,.5)}
+  .axis::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
+    background:linear-gradient(90deg,var(--blue),var(--gold))}
+
+  /* gradient progress */
+  .bar{background:linear-gradient(90deg,var(--blue-darker),var(--blue) 55%,var(--blue-light))}
+
+  /* shiny type-code badges */
+  .code span{
+    background:linear-gradient(160deg,var(--blue),var(--blue-darker));
+    border-color:var(--blue-dark);position:relative;overflow:hidden;
+    box-shadow:0 10px 22px -12px rgba(0,59,92,.7)
+  }
+  .code span::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(135deg,rgba(255,255,255,.45),rgba(255,255,255,0) 45%)}
+  .result-hero{border-top:10px solid transparent;border-image:linear-gradient(90deg,var(--gold),var(--blue),var(--blue-darker)) 1}
+
+  /* ---------- axis spectrum graphic (results) ---------- */
+  .spectrum{display:flex;flex-direction:column;gap:16px;margin:30px auto 0;max-width:560px;text-align:left;position:relative}
+  .spec-row{display:grid;grid-template-columns:1fr;gap:6px}
+  .spec-ends{display:flex;justify-content:space-between;font-size:14px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+  .spec-ends .on{color:var(--blue-dark)}
+  .spec-ends .off{color:var(--muted);opacity:.7}
+  .spec-track{position:relative;height:16px;border-radius:99px;background:var(--blue-lightest);border:2px solid var(--line)}
+  .spec-track::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--line);transform:translateX(-50%);z-index:1}
+  .spec-fill{position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,var(--blue-darker),var(--blue));z-index:2}
+  .spec-marker{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid var(--gold-darker);transform:translate(-50%,-50%);box-shadow:0 3px 8px -2px rgba(0,59,92,.6);z-index:3}
+
+  /* ---------- new result panels ---------- */
+  .panel.talk{border-left:8px solid var(--blue)}
+  .panel.talk h3{color:var(--blue-dark)}
+  .panel.ask{border-left:8px solid var(--blue-darker)}
+  .panel.ask h3{color:var(--blue-darker)}
+  .talk-lead{font-size:19px;line-height:1.6;color:var(--txt);margin-bottom:18px}
+  .talk-lead b{color:var(--blue)}
+  .talk .dot{background:var(--blue)}
+  .ask .dot{background:var(--gold-darker)}
+  .talk li b{color:var(--blue-dark)}
+  .ask li{font-style:italic}
+
+  /* ---------- references / cite ---------- */
+  .panel.refs{border-left:8px solid var(--gold-darker)}
+  .panel.refs h3{color:var(--blue-dark)}
+  .cite{font-size:16px;line-height:1.6;color:var(--txt);background:var(--card2);border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+  .reflabel{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .ref{font-size:15px;line-height:1.6;color:var(--muted);padding-left:20px;text-indent:-20px;margin-bottom:10px}
+  .ref a{color:var(--blue);word-break:break-word}
+  .ref.note{text-indent:0;padding-left:0;font-style:italic;border-top:1px dashed var(--line);padding-top:12px;margin-top:4px}
+
+  /* ---------- fancy grid tiles ---------- */
+  .tile{position:relative;overflow:hidden;border-top:4px solid var(--blue)}
+  .tile:nth-child(8n+1){border-top-color:var(--blue)}
+  .tile:nth-child(8n+2){border-top-color:var(--blue-darker)}
+  .tile:nth-child(8n+3){border-top-color:var(--blue-light)}
+  .tile:nth-child(8n+4){border-top-color:var(--gold-darker)}
+  .tile:nth-child(8n+5){border-top-color:var(--blue-dark)}
+  .tile:nth-child(8n+6){border-top-color:var(--blue)}
+  .tile:nth-child(8n+7){border-top-color:var(--blue-light)}
+  .tile:nth-child(8n+8){border-top-color:var(--gold)}
+  .tile.me{border-top-color:var(--gold-darker)}
 </style>
 </head>
 <body>
@@ -183,6 +302,10 @@
   <!-- INTRO -->
   <section class="screen active" id="intro">
     <div class="hero">
+      <div class="brandbar">
+        <img src="tlc-logo.png" alt="UCLA Teaching & Learning Center" class="brand-logo">
+        <span class="brand-team">AI Action Team</span>
+      </div>
       <div class="kicker">AI Symposium • Personality Assessment</div>
       <h1>What Kind of<br/>AI User Are You?</h1>
       <p class="lead">A personality assessment for the AI age. Twenty quick questions reveal your 4‑letter AI type — one of 16 distinct profiles, from <em>The Visionary</em> to <em>The Craftsperson</em>. Go with your first instinct. There are no right or wrong answers.</p>
@@ -230,6 +353,7 @@
       <div class="tname" id="tname"></div>
       <div class="tdesc" id="tdesc"></div>
       <div class="dims" id="dims"></div>
+      <div class="spectrum" id="spectrum"></div>
     </div>
 
     <div class="panel good">
@@ -239,6 +363,17 @@
     <div class="panel warn">
       <h3>⚠ What to be mindful of</h3>
       <ul id="mindful"></ul>
+    </div>
+
+    <div class="panel talk">
+      <h3>◎ Who to compare notes with</h3>
+      <p class="talk-lead" id="talkLead"></p>
+      <ul id="talkList"></ul>
+    </div>
+
+    <div class="panel ask">
+      <h3>💬 Insight-prompting questions to ask</h3>
+      <ul id="askList"></ul>
     </div>
 
     <div class="actions">
@@ -251,6 +386,16 @@
       <p>Your type is highlighted. Hover any tile to read it.</p>
       <div class="grid" id="grid"></div>
     </div>
+
+    <div class="panel refs">
+      <h3>📚 References &amp; how to cite</h3>
+      <p class="cite">UCLA Teaching &amp; Learning Center, AI Action Team. (2025). <em>What kind of AI user are you?</em> [Interactive personality activity]. University of California, Los Angeles.</p>
+      <p class="reflabel">References &amp; further reading</p>
+      <p class="ref">Myers, I. B., &amp; Myers, P. B. (1995). <em>Gifts differing: Understanding personality type</em>. Davies-Black Publishing.</p>
+      <p class="ref">Pittenger, D. J. (1993). The utility of the Myers-Briggs Type Indicator. <em>Review of Educational Research, 63</em>(4), 467–488. <a href="https://doi.org/10.3102/00346543063004467">https://doi.org/10.3102/00346543063004467</a></p>
+      <p class="ref note">This is a playful, AI-themed activity inspired by personality type indicators. It is built for reflection and conversation — not validated psychometric measurement. Adapted from the “AI Personality Type Quiz” and developed by the UCLA Teaching &amp; Learning Center AI Action Team with the assistance of Claude (Anthropic).</p>
+    </div>
+
     <footer>Curious about a friend? Share this page and compare types.</footer>
   </section>
 
@@ -337,6 +482,37 @@ const LETTER_LABELS = {
   B:"Believer",  S:"Skeptic",
   R:"Open",      T:"Stealth",
   K:"Spark",     P:"Polish"
+};
+
+/* opposite letter on each axis */
+const OPP = { A:"C", C:"A", B:"S", S:"B", R:"T", T:"R", K:"P", P:"K" };
+
+/* axis labels (left letter = the "a" answer side) for the spectrum */
+const AXIS_ENDS = [
+  ["A","C"],  // Autopilot ↔ Copilot
+  ["B","S"],  // Believer ↔ Skeptic
+  ["R","T"],  // Open ↔ Stealth
+  ["K","P"]   // Spark ↔ Polish
+];
+
+/* who to talk with + an insight-prompting question, per letter you scored */
+const LETTER_INSIGHT = {
+  A:{talk:"Find a <b>Copilot</b> — someone who treats every prompt as the start of a dialogue.",
+     q:"When does iterating with AI genuinely beat accepting its first answer — and when is it just extra work?"},
+  C:{talk:"Compare notes with an <b>Autopilot</b> who trusts and ships the first output.",
+     q:"What do you actually gain from the back-and-forth, and where could you safely move faster?"},
+  B:{talk:"Talk with a <b>Skeptic</b> who fact-checks everything before using it.",
+     q:"What's a recent AI claim you accepted — how would you verify it if it really mattered?"},
+  S:{talk:"Talk with a <b>Believer</b> who trusts AI output more readily than you do.",
+     q:"Where is your verification adding real safety, and where is it mostly slowing you down?"},
+  R:{talk:"Swap perspectives with a <b>Stealth</b> user who keeps their AI use private.",
+     q:"Who benefits when you disclose AI use — and when might disclosure do more harm than good?"},
+  T:{talk:"Swap perspectives with an <b>Open</b> user who shares their AI process freely.",
+     q:"What would you gain — or risk — by making your AI process visible to your team?"},
+  K:{talk:"Pair up with a <b>Polish</b> user who only brings AI in at the end.",
+     q:"Which of your ideas are truly yours versus sparked by AI — and does the distinction matter here?"},
+  P:{talk:"Pair up with a <b>Spark</b> user who starts from a blank page with AI.",
+     q:"What might you discover if you let AI help <em>before</em> you have a draft?"}
 };
 
 const TYPES = {
@@ -465,8 +641,53 @@ function finish(){
 
   fillList('effective', t.eff);
   fillList('mindful', t.mind);
+  renderSpectrum();
+  renderRecommendations(code);
   buildGrid(code);
   show('results');
+}
+
+function renderSpectrum(){
+  const wrap=document.getElementById('spectrum'); wrap.innerHTML='';
+  for(let s=0;s<4;s++){
+    let aCount=0;
+    for(let i=s*5;i<s*5+5;i++) if(answers[i]==='a') aCount++;
+    const [la,lb]=AXIS_ENDS[s];
+    const leftWins = aCount>=3;
+    const pos = ((5-aCount)/5)*100;          // marker % from left (0 = all 'a'/left letter)
+    let fillLeft, fillW;                      // diverging fill from the centre
+    if(pos<=50){ fillLeft=pos; fillW=50-pos; } else { fillLeft=50; fillW=pos-50; }
+    const row=document.createElement('div'); row.className='spec-row';
+    row.innerHTML =
+      `<div class="spec-ends">`+
+        `<span class="${leftWins?'on':'off'}">${LETTER_LABELS[la]}</span>`+
+        `<span class="${leftWins?'off':'on'}">${LETTER_LABELS[lb]}</span>`+
+      `</div>`+
+      `<div class="spec-track">`+
+        `<div class="spec-fill" style="left:${fillLeft}%;width:${fillW}%"></div>`+
+        `<div class="spec-marker" style="left:${pos}%"></div>`+
+      `</div>`;
+    wrap.appendChild(row);
+  }
+}
+
+function renderRecommendations(code){
+  const oppCode = code.split('').map(l=>OPP[l]).join('');   // mirror opposite
+  const opp = TYPES[oppCode];
+  document.getElementById('talkLead').innerHTML =
+    `Your mirror opposite is <b>${opp.name}</b> (${oppCode}) — the richest insights come from comparing how you each use AI. Seek out one counterpart for each of your four traits:`;
+
+  const talkUl=document.getElementById('talkList'); talkUl.innerHTML='';
+  const askUl=document.getElementById('askList'); askUl.innerHTML='';
+  code.split('').forEach(l=>{
+    const ins=LETTER_INSIGHT[l];
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="dot"></span><span>${ins.talk}</span>`;
+    talkUl.appendChild(li);
+    const li2=document.createElement('li');
+    li2.innerHTML=`<span class="dot"></span><span>${ins.q}</span>`;
+    askUl.appendChild(li2);
+  });
 }
 
 function fillList(id, items){
